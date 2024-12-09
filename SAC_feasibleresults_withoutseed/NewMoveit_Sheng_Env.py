@@ -71,7 +71,7 @@ if not os.path.exists(base_log_dir):
 
 
 # File paths for logging rewards
-collision_contact_filename = os.path.join(base_log_dir, '5thDec_Collision_Contact.txt')
+collision_contact_filename = os.path.join(base_log_dir, '28thNov_Collision_Contact.txt')
 
 
 
@@ -237,7 +237,7 @@ class Ur5():
         self.add_table_to_scene()
 
         ### object is generated
-        self.obj_pos = self.target_generate()
+        self.target_generate()
 
         ###object for Checking Validity State Class
         self.collision_checker_node = StateValidity()
@@ -250,22 +250,20 @@ class Ur5():
 
         # Request the full planning scene, including the allowed collision matrix
         self.request = GetPlanningSceneRequest()
-        
 
-
-    # Method to add the table to the MoveIt planning scene
     def add_table_to_scene(self):
         table_pose = PoseStamped()
         table_pose.header.frame_id = "world"  # Use the correct reference frame
         table_pose.pose.position.x = 0.0  # Set to your table's position (centered at origin)
         table_pose.pose.position.y = 0.0
-        table_pose.pose.position.z = 0.005  # Half of the table's height to place it on the ground
+        table_pose.pose.position.z = 0.8  # Set the height of the table to 800 mm (0.8 meters)
         table_pose.pose.orientation.w = 1.0
 
-        # Add the table to the scene with correct size
-        self.scene.add_box("table", table_pose, size=(1.27, 0.577, 0.03))  # Set size to match your table dimensions
-        # self.scene.add_box("table", table_pose, size=(1.87, 0.577, 0.03))
-        rospy.loginfo("Table added to MoveIt planning scene with correct dimensions")
+        # Add the table to the scene with correct dimensions
+        self.scene.add_box("table", table_pose,
+                           size=(1.27, 0.577, 0.8))  # Length: 1270 mm, Width: 577 mm, Height: 800 mm
+        rospy.loginfo(
+            "Table added to MoveIt planning scene with updated dimensions: 1270x577x800 mm and height 800 mm")
 
 
     ###Checking for the Truncation Condition
@@ -401,7 +399,7 @@ class Ur5():
         truncated = truncated or terminal
         
 
-        return state, reward, end, truncated , terminal, collision_happened, target_pos, end_eff_pos
+        return state, reward, end, truncated , collision_happened, target_pos, end_eff_pos
 
 
     ###Method to reset the arm joint position
